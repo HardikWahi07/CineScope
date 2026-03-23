@@ -1,5 +1,3 @@
-#CineScope
-
 # CineScope
 
 ## Project Description
