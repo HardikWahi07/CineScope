@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineScope | Netflix Style Movie Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark">
+    <header>
+        <div class="logo">Cine<span>Scope</span></div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" id="favBtn">My Watchlist</a>
+        </div>
+        <div class="search-box">
+            <input type="text" id="srch" placeholder="Search overall...">
+            <button id="goBtn">Go</button>
+        </div>
+        <div class="controls">
+            <button id="mode">Light / Dark</button>
+        </div>
+    </header>
+
+    <main id="home-view">
+        <section class="banner">
+            <div class="banner-content">
+                <h1 id="bTitle">Featured</h1>
+                <p id="bPlot">Discover your next favorite movie from CineScope's massive collection.</p>
+                <div class="banner-btns">
+                    <button id="bInfo">More Info</button>
+                    <button class="grey" onclick="fR()">Refresh</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="rows-container"></div>
+
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+        </div>
+    </main>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeM()">&times;</span>
+            <div id="modal-body">
+                <!-- Details injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-win" class="closed">
+        <div class="chat-header">
+            <span>CineBot 🤖</span>
+            <button id="closeChat">x</button>
+        </div>
+        <div id="msgs"></div>
+        <div class="chat-input">
+            <input type="text" id="chatIn" placeholder="Ask for suggestions...">
+            <button id="send">></button>
+        </div>
+    </div>
+    <button id="openChat">Chat</button>
+
+    <script src="config.js"></script>
+    <script>
+        // Bulletproof Secret Bridge
+        (async () => {
+            await initConfig();
+            window.API_KEY = window.config?.API_KEY || "";
+            window.BASE_URL = window.config?.BASE_URL || "";
+            window.GROQ_KEY = window.config?.GROQ_KEY || "";
+            
+            // Now load the main logic (only if keys exist or keep loading to show card errors)
+            const s = document.createElement('script');
+            s.src = "script.js";
+            document.body.appendChild(s);
+        })();
+    </script>
+</body>
+
+</html>
