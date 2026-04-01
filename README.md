@@ -1,7 +1,7 @@
 # CineScope
 
 ## Project Description
-CineScope is a modern web application that allows users to discover movies and TV shows dynamically. It fetches real-time data from a public API and provides searching, filtering, and sorting capabilities. Users can save favorites in local storage and optionally interact with an AI-powered helper bot to explore features or get movie recommendations.
+CineScope is a modern web application that allows users to discover movies and TV shows dynamically. It fetches real-time data from a public API and provides searching, filtering, and sorting capabilities. Users can save favorites in local storage and optionally interact with an AI-powered helper bot to explore features or get movie recommendations. The AI is powered by the Groq API
 
 ## Features
 
