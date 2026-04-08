@@ -70,14 +70,11 @@
 
     <script src="config.js"></script>
     <script>
-        // Bulletproof Secret Bridge
         (async () => {
             await initConfig();
             window.API_KEY = window.config?.API_KEY || "";
             window.BASE_URL = window.config?.BASE_URL || "";
             window.GROQ_KEY = window.config?.GROQ_KEY || "";
-            
-            // Now load the main logic (only if keys exist or keep loading to show card errors)
             const s = document.createElement('script');
             s.src = "script.js";
             document.body.appendChild(s);
