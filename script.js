@@ -4,10 +4,39 @@ const l = document.getElementById('loader');
 const mod = document.getElementById('modal');
 const modB = document.getElementById('modal-body');
 
+function waz() {
+    return JSON.parse(localStorage.getItem('wish') || '[]');
+}
+
+function yum(id) {
+    const a = waz();
+    if (!a.includes(id)) {
+        a.push(id);
+        localStorage.setItem('wish', JSON.stringify(a));
+    }
+}
+
+function oop(id) {
+    const a = waz().filter(x => x !== id);
+    localStorage.setItem('wish', JSON.stringify(a));
+}
+
+function rat(id) {
+    const d = JSON.parse(localStorage.getItem('rates') || '{}');
+    return d[id] || 0;
+}
+
+
+function setr(id, p) {
+    const d = JSON.parse(localStorage.getItem('rates') || '{}');
+    d[id] = p;
+    localStorage.setItem('rates', JSON.stringify(d));
+}
+
 const topIds = ['tt0111161', 'tt0068646', 'tt0468569', 'tt0137523', 'tt1375666', 'tt0109830', 'tt1345836', 'tt0816692', 'tt0110912', 'tt0076759', 'tt0167260', 'tt0120737'];
 const trendIds = ['tt1535483', 'tt15239678', 'tt1160419', 'tt10872600', 'tt1877830', 'tt11003518', 'tt12411924', 'tt14548482', 'tt4425200', 'tt9362722'];
 const animeIds = ['tt0409591', 'tt0877057', 'tt2560140', 'tt0450892', 'tt11003518', 'tt0417299', 'tt0388629', 'tt0983216', 'tt2293922', 'tt0440621'];
-// MARVEL PINNED LIST (V4): High-quality, main saga movies ONLY. No One-Shots, No BTS.
+
 const marvelIds = [
     'tt0371746', // Iron Man (2008)
     'tt6443346', // Black Widow (2021)
@@ -65,6 +94,11 @@ async function fR() {
     l.classList.add('hidden');
     sB();
     obs();
+    const v = JSON.parse(localStorage.getItem('v') || '[]');
+    if (v.length > 0) {
+        const res = await fIDs_P('Recently Viewed', v.slice(0,5));
+        if (res) rR(res.n, '', '', res.list);
+    }
 }
 
 function processAll(all) {
@@ -77,6 +111,12 @@ function processAll(all) {
     l.classList.add('hidden');
     sB();
     obs();
+    const v = JSON.parse(localStorage.getItem('v') || '[]');
+    if (v.length > 0) {
+        fIDs_P('Recently Viewed', v.slice(0,5)).then(res => {
+            if (res) rR(res.n, '', '', res.list);
+        });
+    }
 }
 
 async function fIDs_P(n, ids) {
@@ -128,7 +168,7 @@ function rR(n, q, t, list, first = false) {
     const r = document.createElement('div');
     r.className = 'row fade-in visible';
     r.innerHTML = `<h2 class="row-title">${n}</h2><div class="row-cards"></div>`;
-    if(first) c.prepend(r); else c.appendChild(r);
+    if(first) { c.prepend(r); r.classList.add('row-wishlist'); } else c.appendChild(r);
     const rowC = r.querySelector('.row-cards');
     list.forEach(m => {
         const card = document.createElement('div');
@@ -170,6 +210,8 @@ async function showD(id) {
         const rT = (m.Runtime && m.Runtime !== "N/A") ? m.Runtime : "";
         const rD = (m.Director && m.Director !== "N/A") ? m.Director : "Unknown";
         const rA = (m.Actors && m.Actors !== "N/A") ? m.Actors : "N/A";
+        let y = waz();
+        let o = rat(id);
         modB.innerHTML = `
             <div class="modal-img-container"> <img class="modal-poster" src="${poster}"> </div>
             <div class="modal-details text-anim">
@@ -182,6 +224,15 @@ async function showD(id) {
                         <div class="stream-icons"> <span class="icon-netflix">N</span> <span class="icon-prime">P</span> <span class="icon-disney">D+</span> </div>
                         <a href="https://www.justwatch.com/us/search?q=${encodeURIComponent(m.Title)}" target="_blank" class="watch-link">Check Availability on JustWatch →</a>
                     </div>
+                    <div class="wishlist-section">
+                        <button id="b">${y.includes(id) ? 'Remove from Wishlist' : 'Add to Wishlist'}</button>
+                    </div>
+                    <div class="rating-section">
+                        <p>Rate this movie:</p>
+                        <div class="stars">
+                            ${[1,2,3,4,5].map(s => `<span class="star ${o >= s ? 'selected' : ''}" data-rating="${s}">★</span>`).join('')}
+                        </div>
+                    </div>
                 </div>
                 <div class="m-info-right">
                     <p class="m-label">Cast</p><p class="m-val">${rA}</p>
@@ -191,6 +242,32 @@ async function showD(id) {
             </div>
         `;
         mod.classList.remove('hidden');
+        document.getElementById('b').onclick = () => {
+            if (y.includes(id)) {
+                oop(id);
+                y = y.filter(i => i !== id);
+                document.getElementById('b').innerText = 'Add to Wishlist';
+            } else {
+                yum(id);
+                y.push(id);
+                document.getElementById('b').innerText = 'Remove from Wishlist';
+            }
+        };
+        document.querySelectorAll('.star').forEach(s => {
+            s.onclick = () => {
+                const p = parseInt(s.dataset.rating);
+                setr(id, p);
+                o = p;
+                document.querySelectorAll('.star').forEach(st => {
+                    st.classList.toggle('selected', parseInt(st.dataset.rating) <= p);
+                });
+            };
+        });
+        let v = JSON.parse(localStorage.getItem('v') || '[]');
+        v = v.filter(i => i !== id);
+        v.unshift(id);
+        if (v.length > 10) v = v.slice(0,10);
+        localStorage.setItem('v', JSON.stringify(v));
     } catch(e) { l.classList.add('hidden'); }
 }
 
@@ -225,6 +302,22 @@ document.getElementById('goBtn').onclick = () => {
 };
 
 document.getElementById('mode').onclick = () => document.body.classList.toggle('dark');
+
+document.getElementById('favBtn').onclick = async () => {
+    const a = waz();
+    if (a.length === 0) {
+        alert('wishlist is empty');
+        return;
+    }
+    const res = await fIDs_P('My Wishlist', a);
+    if (res) {
+        const old = document.querySelector('.row-wishlist');
+        if (old) old.remove();
+        rR(res.n, '', '', res.list, true);
+        const row = document.querySelector('.row-wishlist');
+        if (row) row.querySelector('.row-title').innerText = 'My Wishlist';
+    }
+};
 
 const cW = document.getElementById('chat-win');
 if(cW) {
