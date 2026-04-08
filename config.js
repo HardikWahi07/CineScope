@@ -3,7 +3,6 @@ window.config = { API_KEY: "", BASE_URL: "https://www.omdbapi.com/", GROQ_KEY: "
 
 async function initConfig() {
     try {
-        // PRO: Try to fetch secrets from secrets.env
         const response = await fetch('secrets.env');
         if (!response.ok) throw new Error("File not found");
         const text = await response.text();
