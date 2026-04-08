@@ -174,3 +174,33 @@ header {
     .banner-content h1 { font-size: 2.5rem; }
     header { flex-direction: column; gap: 1rem; }
 }
+
+.wishlist-section button {
+    background: var(--acc-c);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.rating-section {
+    margin-top: 20px;
+}
+
+.stars {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.star {
+    font-size: 1.5rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.star.selected {
+    color: #ffd700;
+}
