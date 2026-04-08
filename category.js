@@ -7,9 +7,36 @@ document.getElementById('cat-title').innerText = n;
 const grid = document.getElementById('grid-container');
 const l = document.getElementById('loader');
 
-// Global Detailed Modal (Consistent logic)
 const mod = document.getElementById('modal');
 const modB = document.getElementById('modal-body');
+
+function waz() {
+    return JSON.parse(localStorage.getItem('wish') || '[]');
+}
+
+function yum(id) {
+    const a = waz();
+    if (!a.includes(id)) {
+        a.push(id);
+        localStorage.setItem('wish', JSON.stringify(a));
+    }
+}
+
+function oop(id) {
+    const a = waz().filter(x => x !== id);
+    localStorage.setItem('wish', JSON.stringify(a));
+}
+
+function rat(id) {
+    const d = JSON.parse(localStorage.getItem('rates') || '{}');
+    return d[id] || 0;
+}
+
+function setr(id, p) {
+    const d = JSON.parse(localStorage.getItem('rates') || '{}');
+    d[id] = p;
+    localStorage.setItem('rates', JSON.stringify(d));
+}
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -106,6 +133,8 @@ async function showD(id) {
         const rT = (m.Runtime && m.Runtime !== "N/A") ? m.Runtime : "";
         const rD = (m.Director && m.Director !== "N/A") ? m.Director : "Unknown";
         const rA = (m.Actors && m.Actors !== "N/A") ? m.Actors : "N/A";
+        let y = waz();
+        let o = rat(id);
 
         modB.innerHTML = `
             <div class="modal-img-container"> <img class="modal-poster" src="${poster}"> </div>
@@ -128,6 +157,15 @@ async function showD(id) {
                         </div>
                         <a href="https://www.justwatch.com/us/search?q=${encodeURIComponent(m.Title)}" target="_blank" class="watch-link">Check Availability on JustWatch →</a>
                     </div>
+                    <div class="wishlist-section">
+                        <button id="b">${y.includes(id) ? 'Remove from Wishlist' : 'Add to Wishlist'}</button>
+                    </div>
+                    <div class="rating-section">
+                        <p>Rate this movie:</p>
+                        <div class="stars">
+                            ${[1,2,3,4,5].map(s => `<span class="star ${o >= s ? 'selected' : ''}" data-rating="${s}">★</span>`).join('')}
+                        </div>
+                    </div>
                 </div>
                 <div class="m-info-right">
                     <p class="m-label">Cast</p><p class="m-val">${rA}</p>
@@ -137,6 +175,32 @@ async function showD(id) {
             </div>
         `;
         mod.classList.remove('hidden');
+        document.getElementById('b').onclick = () => {
+            if (y.includes(id)) {
+                oop(id);
+                y = y.filter(i => i !== id);
+                document.getElementById('b').innerText = 'Add to Wishlist';
+            } else {
+                yum(id);
+                y.push(id);
+                document.getElementById('b').innerText = 'Remove from Wishlist';
+            }
+        };
+        document.querySelectorAll('.star').forEach(s => {
+            s.onclick = () => {
+                const p = parseInt(s.dataset.rating);
+                setr(id, p);
+                o = p;
+                document.querySelectorAll('.star').forEach(st => {
+                    st.classList.toggle('selected', parseInt(st.dataset.rating) <= p);
+                });
+            };
+        });
+        let v = JSON.parse(localStorage.getItem('v') || '[]');
+        v = v.filter(i => i !== id);
+        v.unshift(id);
+        if (v.length > 10) v = v.slice(0,10);
+        localStorage.setItem('v', JSON.stringify(v));
     } catch(e) { l.classList.add('hidden'); }
 }
 
